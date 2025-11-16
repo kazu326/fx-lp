@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FX LP - スマホ特化ランディングページ</title>
+    
+    <!-- Swiper.js CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            touch-action: pan-y;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #000;
+        }
+        
+        .swiper-container {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .swiper-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .swiper-slide {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .slide-image {
+            width: 100%;
+            height: auto;
+            max-height: calc(100vh - 200px);
+            max-height: calc(100dvh - 200px);
+            object-fit: contain;
+            display: block;
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
+            flex-shrink: 0;
+        }
+        
+        /* スライドごとのコンテンツエリア */
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 20px;
+            padding-bottom: max(15px, env(safe-area-inset-bottom));
+            z-index: 20;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%);
+        }
+        
+        .slide-text {
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .slide-cta-button {
+            display: block;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide-cta-button:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .slide-cta-button.cta-line {
+            background: linear-gradient(135deg, #06C755 0%, #05A844 100%);
+            box-shadow: 0 4px 15px rgba(6, 199, 85, 0.4);
+        }
+        
+        .slide-cta-button.cta-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+        
+        /* ページネーション - 親指位置（右下） */
+        .swiper-pagination {
+            position: fixed;
+            right: 20px;
+            bottom: 120px;
+            bottom: calc(120px + env(safe-area-inset-bottom));
+            width: auto;
+            left: auto;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .swiper-pagination-bullet {
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.4);
+            opacity: 1;
+            margin: 0;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .swiper-pagination-bullet-active {
+            background: #FFD700;
+            border-color: #FFD700;
+            width: 14px;
+            height: 14px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4);
+            transform: scale(1.2);
+        }
+        
+        /* ナビゲーション矢印 */
+        .swiper-nav {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            display: flex;
+            gap: 20px;
+            pointer-events: none;
+        }
+        
+        .swiper-nav-arrow {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            pointer-events: auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            opacity: 0.8;
+        }
+        
+        .swiper-nav-arrow:active {
+            transform: scale(0.9);
+            opacity: 1;
+        }
+        
+        .swiper-nav-arrow.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .swiper-nav-arrow svg {
+            width: 24px;
+            height: 24px;
+            fill: #333;
+        }
+        
+        .swiper-nav-arrow.prev {
+            top: 20px;
+        }
+        
+        .swiper-nav-arrow.next {
+            bottom: 180px;
+            bottom: calc(180px + env(safe-area-inset-bottom));
+        }
+        
+        /* 誘導アイコン */
+        .swipe-guide {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
+            pointer-events: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 24px;
+            animation: bounceGuide 2s ease-in-out infinite;
+        }
+        
+        .swipe-guide.up {
+            top: 20px;
+        }
+        
+        .swipe-guide.down {
+            bottom: 200px;
+            bottom: calc(200px + env(safe-area-inset-bottom));
+        }
+        
+        @keyframes bounceGuide {
+            0%, 100% {
+                opacity: 0.6;
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(-8px);
+            }
+        }
+        
+        /* フッター固定CTA（常時表示） */
+        .footer-cta {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.8) 70%, transparent 100%);
+            padding: 15px 20px 20px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+        }
+        
+        .footer-cta.hidden {
+            display: none;
+        }
+        
+        .line-button {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            display: block;
+            background: #06C755;
+            color: #fff;
+            text-align: center;
+            padding: 16px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(6, 199, 85, 0.4);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .line-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(6, 199, 85, 0.3);
+        }
+        
+        /* デバッグログ表示エリア（開発用） */
+        .debug-log {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-family: monospace;
+            max-width: 300px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .debug-log.active {
+            display: block;
+        }
+        
+        .debug-log-item {
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+        }
+        
+        .debug-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: 1px solid #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1001;
+            cursor: pointer;
+        }
+        
+        /* レスポンシブ調整 */
+        @media (max-width: 480px) {
+            .swiper-pagination {
+                right: 15px;
+                bottom: 110px;
+            }
+            
+            .swiper-pagination-bullet {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .swiper-pagination-bullet-active {
+                width: 12px;
+                height: 12px;
+            }
+            
+            .swiper-nav-arrow {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .swiper-nav-arrow svg {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .slide-content {
+                padding: 12px 15px;
+            }
+            
+            .slide-text {
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+            
+            .slide-cta-button {
+                padding: 12px 18px;
+                font-size: 14px;
+            }
+            
+            .footer-cta {
+                padding: 12px 15px 18px;
+            }
+            
+            .line-button {
+                padding: 14px 18px;
+                font-size: 15px;
+            }
+        }
+        
+        /* 横画面対応 */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .slide-image {
+                max-height: calc(100vh - 150px);
+                max-height: calc(100dvh - 150px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- デバッグログ -->
+    <div class="debug-log" id="debugLog"></div>
+    <button class="debug-toggle" id="debugToggle">ログON/OFF</button>
+    
+    <!-- Swiper -->
+    <div class="swiper-container" id="mainSwiper">
+        <div class="swiper-wrapper">
+            <!-- スライド1: Hero -->
+            <div class="swiper-slide" data-slide="1">
+                <img src="./images/01_hero.png" alt="Hero" class="slide-image">
+                <div class="slide-content">
+                    <div class="slide-text">今すぐ始めて、理想のトレードライフを実現</div>
+                    <a href="#" class="slide-cta-button cta-primary" data-cta="hero-primary">無料で始める</a>
+                </div>
+                <div class="swipe-guide down">↓</div>
+            </div>
+            
+            <!-- スライド2: Comparison -->
+            <div class="swiper-slide" data-slide="2">
+                <img src="./images/02_comparison.png" alt="Comparison" class="slide-image">
+                <div class="slide-content">
+                    <div class="slide-text">従来の方法と比べて、圧倒的な差を実感</div>
+                    <a href="#" class="slide-cta-button cta-line" data-cta="comparison-line">LINEで相談する</a>
+                </div>
+                <div class="swipe-guide up">↑</div>
+                <div class="swipe-guide down">↓</div>
+            </div>
+            
+            <!-- スライド3: Before After -->
+            <div class="swiper-slide" data-slide="3">
+                <img src="./images/03_before_after.png" alt="Before After" class="slide-image">
+                <div class="slide-content">
+                    <div class="slide-text">こんな変化が実現できます</div>
+                    <a href="#" class="slide-cta-button cta-primary" data-cta="before-after-primary">詳しく見る</a>
+                </div>
+                <div class="swipe-guide up">↑</div>
+                <div class="swipe-guide down">↓</div>
+            </div>
+            
+            <!-- スライド4: Benefits -->
+            <div class="swiper-slide" data-slide="4">
+                <img src="./images/04_benefits.png" alt="Benefits" class="slide-image">
+                <div class="slide-content">
+                    <div class="slide-text">3つの大きなメリット</div>
+                    <a href="#" class="slide-cta-button cta-line" data-cta="benefits-line">今すぐ登録</a>
+                </div>
+                <div class="swipe-guide up">↑</div>
+                <div class="swipe-guide down">↓</div>
+            </div>
+            
+            <!-- スライド5: Anxiety -->
+            <div class="swiper-slide" data-slide="5">
+                <img src="./images/05_anxiety.png" alt="Anxiety" class="slide-image">
+                <div class="slide-content">
+                    <div class="slide-text">そんな不安を解消します</div>
+                    <a href="#" class="slide-cta-button cta-primary" data-cta="anxiety-primary">不安を解消する</a>
+                </div>
+                <div class="swipe-guide up">↑</div>
+                <div class="swipe-guide down">↓</div>
+            </div>
+            
+            <!-- スライド6: Testimonial C -->
+            <div class="swiper-slide" data-slide="6">
+                <img src="./images/06_testimonial_c.png" alt="Testimonial C" class="slide-image">
+                <div class="slide-content">
+                    <div class="slide-text">実際のユーザーの声</div>
+                    <a href="#" class="slide-cta-button cta-line" data-cta="testimonial-c-line">同じ結果を得る</a>
+                </div>
+                <div class="swipe-guide up">↑</div>
+                <div class="swipe-guide down">↓</div>
+            </div>
+            
+            <!-- スライド7: Testimonial A -->
+            <div class="swiper-slide" data-slide="7">
+                <img src="./images/07_testimonial_a.png" alt="Testimonial A" class="slide-image">
+                <div class="slide-content">
+                    <div class="slide-text">多くの方が成果を実感しています</div>
+                    <a href="#" class="slide-cta-button cta-primary" data-cta="testimonial-a-primary">成果を実感する</a>
+                </div>
+                <div class="swipe-guide up">↑</div>
+                <div class="swipe-guide down">↓</div>
+            </div>
+            
+            <!-- スライド8: Testimonial B -->
+            <div class="swiper-slide" data-slide="8">
+                <img src="./images/08_testimonial_b.png" alt="Testimonial B" class="slide-image">
+                <div class="slide-content">
+                    <div class="slide-text">あなたも次の成功者に</div>
+                    <a href="#" class="slide-cta-button cta-line" data-cta="testimonial-b-line">今すぐ始める</a>
+                </div>
+                <div class="swipe-guide up">↑</div>
+                <div class="swipe-guide down">↓</div>
+            </div>
+            
+            <!-- スライド9: TradeLog Pro -->
+            <div class="swiper-slide" data-slide="9">
+                <img src="./images/09_tradelog_pro.png" alt="TradeLog Pro" class="slide-image">
+                <div class="slide-content">
+                    <div class="slide-text">最後まで見てくれてありがとうございます</div>
+                    <a href="#" class="slide-cta-button cta-line" data-cta="final-line">今すぐLINE登録</a>
+                </div>
+                <div class="swipe-guide up">↑</div>
+            </div>
+        </div>
+        
+        <!-- ページネーション -->
+        <div class="swiper-pagination"></div>
+        
+        <!-- ナビゲーション矢印 -->
+        <div class="swiper-nav">
+            <div class="swiper-nav-arrow prev" id="prevArrow">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+                </svg>
+            </div>
+            <div class="swiper-nav-arrow next" id="nextArrow">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <!-- フッター固定CTA（常時表示版） -->
+    <div class="footer-cta" id="footerCta">
+        <a href="https://line.me/ti/p/@your-line-id" class="line-button" id="lineButton" data-cta="footer-line">
+            LINEで友だち追加
+        </a>
+    </div>
+    
+    <script>
+        // ============================================
+        // イベント解析・ログ出力システム
+        // ============================================
+        const Analytics = {
+            events: [],
+            enabled: true,
+            
+            log: function(type, data) {
+                const event = {
+                    timestamp: new Date().toISOString(),
+                    type: type,
+                    data: data
+                };
+                
+                this.events.push(event);
+                
+                // コンソール出力
+                if (this.enabled) {
+                    console.log(`[Analytics] ${type}:`, data);
+                }
+                
+                // デバッグログ表示
+                this.updateDebugLog(type, data);
+                
+                // ここで外部APIに送信することも可能
+                // this.sendToAPI(event);
+            },
+            
+            updateDebugLog: function(type, data) {
+                const logEl = document.getElementById('debugLog');
+                if (!logEl) return;
+                
+                const logItem = document.createElement('div');
+                logItem.className = 'debug-log-item';
+                const time = new Date().toLocaleTimeString();
+                logItem.textContent = `[${time}] ${type}: ${JSON.stringify(data)}`;
+                
+                logEl.insertBefore(logItem, logEl.firstChild);
+                
+                // 最大20件まで保持
+                while (logEl.children.length > 20) {
+                    logEl.removeChild(logEl.lastChild);
+                }
+            },
+            
+            // 外部API送信の例（必要に応じて実装）
+            sendToAPI: function(event) {
+                // fetch('/api/analytics', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(event)
+                // });
+            },
+            
+            // イベント履歴を取得
+            getEvents: function() {
+                return this.events;
+            },
+            
+            // 特定のタイプのイベントを取得
+            getEventsByType: function(type) {
+                return this.events.filter(e => e.type === type);
+            }
+        };
+        
+        // ============================================
+        // Swiper初期化
+        // ============================================
+        const swiper = new Swiper('.swiper-container', {
+            direction: 'vertical',
+            slidesPerView: 1,
+            spaceBetween: 0,
+            mousewheel: {
+                enabled: true,
+                sensitivity: 1.5,
+                releaseOnEdges: true,
+            },
+            touchEventsTarget: 'container',
+            touchRatio: 1.5,
+            touchAngle: 45,
+            resistance: false,
+            resistanceRatio: 0,
+            speed: 300,
+            freeMode: false,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                bulletClass: 'swiper-pagination-bullet',
+                bulletActiveClass: 'swiper-pagination-bullet-active',
+            },
+            threshold: 10,
+            longSwipes: true,
+            longSwipesRatio: 0.5,
+            longSwipesMs: 300,
+            iOSEdgeSwipeDetection: true,
+            iOSEdgeSwipeThreshold: 20,
+        });
+        
+        // ============================================
+        // スワイプイベント解析
+        // ============================================
+        swiper.on('slideChange', function() {
+            const slideIndex = swiper.activeIndex;
+            const slideEl = swiper.slides[slideIndex];
+            const slideNumber = slideEl.getAttribute('data-slide');
+            
+            Analytics.log('swipe', {
+                slideIndex: slideIndex,
+                slideNumber: slideNumber,
+                direction: 'changed',
+                timestamp: Date.now()
+            });
+            
+            // ナビゲーション矢印の更新
+            updateNavArrows();
+            
+            // 誘導アイコンの表示/非表示
+            updateSwipeGuides();
+            
+            // 固定CTAの表示制御（オプション）
+            // toggleFooterCta(slideIndex);
+        });
+        
+        swiper.on('slideChangeTransitionStart', function() {
+            Analytics.log('swipe_start', {
+                slideIndex: swiper.activeIndex,
+                timestamp: Date.now()
+            });
+        });
+        
+        swiper.on('slideChangeTransitionEnd', function() {
+            Analytics.log('swipe_end', {
+                slideIndex: swiper.activeIndex,
+                timestamp: Date.now()
+            });
+        });
+        
+        swiper.on('touchStart', function() {
+            Analytics.log('touch_start', {
+                timestamp: Date.now()
+            });
+        });
+        
+        swiper.on('touchEnd', function() {
+            Analytics.log('touch_end', {
+                timestamp: Date.now()
+            });
+        });
+        
+        // ============================================
+        // CTAクリックイベント解析
+        // ============================================
+        document.querySelectorAll('[data-cta]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const ctaId = this.getAttribute('data-cta');
+                const slideIndex = swiper.activeIndex;
+                const slideEl = swiper.slides[slideIndex];
+                const slideNumber = slideEl.getAttribute('data-slide');
+                const buttonType = this.classList.contains('line-button') ? 'footer' : 'slide';
+                const buttonText = this.textContent.trim();
+                
+                Analytics.log('cta_click', {
+                    ctaId: ctaId,
+                    slideIndex: slideIndex,
+                    slideNumber: slideNumber,
+                    buttonType: buttonType,
+                    buttonText: buttonText,
+                    timestamp: Date.now()
+                });
+                
+                // 実際の遷移処理（LINE URLなど）
+                handleCtaClick(ctaId, this);
+            });
+        });
+        
+        // CTAクリック処理
+        function handleCtaClick(ctaId, buttonEl) {
+            // LINEボタンの場合
+            if (ctaId.includes('line') || buttonEl.classList.contains('line-button')) {
+                const lineUrl = buttonEl.getAttribute('href') || 'https://line.me/ti/p/@your-line-id';
+                // window.open(lineUrl, '_blank');
+                // または
+                // window.location.href = lineUrl;
+                console.log('LINE登録:', lineUrl);
+            } else {
+                // その他のCTA処理
+                console.log('CTA clicked:', ctaId);
+            }
+        }
+        
+        // ============================================
+        // ナビゲーション矢印
+        // ============================================
+        const prevArrow = document.getElementById('prevArrow');
+        const nextArrow = document.getElementById('nextArrow');
+        
+        prevArrow.addEventListener('click', function() {
+            if (!this.classList.contains('disabled')) {
+                Analytics.log('nav_click', {
+                    direction: 'prev',
+                    fromIndex: swiper.activeIndex,
+                    timestamp: Date.now()
+                });
+                swiper.slidePrev();
+            }
+        });
+        
+        nextArrow.addEventListener('click', function() {
+            if (!this.classList.contains('disabled')) {
+                Analytics.log('nav_click', {
+                    direction: 'next',
+                    fromIndex: swiper.activeIndex,
+                    timestamp: Date.now()
+                });
+                swiper.slideNext();
+            }
+        });
+        
+        function updateNavArrows() {
+            if (swiper.isBeginning) {
+                prevArrow.classList.add('disabled');
+            } else {
+                prevArrow.classList.remove('disabled');
+            }
+            
+            if (swiper.isEnd) {
+                nextArrow.classList.add('disabled');
+            } else {
+                nextArrow.classList.remove('disabled');
+            }
+        }
+        
+        // 初期状態の更新
+        updateNavArrows();
+        
+        // ============================================
+        // 誘導アイコンの表示制御
+        // ============================================
+        function updateSwipeGuides() {
+            const slides = document.querySelectorAll('.swiper-slide');
+            slides.forEach((slide, index) => {
+                const upGuide = slide.querySelector('.swipe-guide.up');
+                const downGuide = slide.querySelector('.swipe-guide.down');
+                
+                if (index === swiper.activeIndex) {
+                    // 最初のスライド
+                    if (index === 0) {
+                        if (upGuide) upGuide.style.display = 'none';
+                        if (downGuide) downGuide.style.display = 'block';
+                    }
+                    // 最後のスライド
+                    else if (index === slides.length - 1) {
+                        if (upGuide) upGuide.style.display = 'block';
+                        if (downGuide) downGuide.style.display = 'none';
+                    }
+                    // 中間のスライド
+                    else {
+                        if (upGuide) upGuide.style.display = 'block';
+                        if (downGuide) downGuide.style.display = 'block';
+                    }
+                } else {
+                    if (upGuide) upGuide.style.display = 'none';
+                    if (downGuide) downGuide.style.display = 'none';
+                }
+            });
+        }
+        
+        // 初期状態の更新
+        updateSwipeGuides();
+        
+        // ============================================
+        // 固定CTAの表示制御（オプション機能）
+        // ============================================
+        function toggleFooterCta(slideIndex) {
+            const footerCta = document.getElementById('footerCta');
+            // 例: 最後のスライドでは非表示にする
+            if (slideIndex === swiper.slides.length - 1) {
+                footerCta.classList.add('hidden');
+            } else {
+                footerCta.classList.remove('hidden');
+            }
+        }
+        
+        // ============================================
+        // デバッグログの表示/非表示
+        // ============================================
+        document.getElementById('debugToggle').addEventListener('click', function() {
+            const logEl = document.getElementById('debugLog');
+            logEl.classList.toggle('active');
+        });
+        
+        // ============================================
+        // ページネーションクリックイベント
+        // ============================================
+        document.querySelectorAll('.swiper-pagination-bullet').forEach((bullet, index) => {
+            bullet.addEventListener('click', function() {
+                Analytics.log('pagination_click', {
+                    targetIndex: index,
+                    currentIndex: swiper.activeIndex,
+                    timestamp: Date.now()
+                });
+            });
+        });
+        
+        // ============================================
+        // リサイズ対応
+        // ============================================
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                swiper.update();
+                updateNavArrows();
+                Analytics.log('resize', {
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    timestamp: Date.now()
+                });
+            }, 100);
+        });
+        
+        // ============================================
+        // 初期化完了ログ
+        // ============================================
+        window.addEventListener('load', function() {
+            Analytics.log('page_load', {
+                totalSlides: swiper.slides.length,
+                timestamp: Date.now()
+            });
+            
+            // 画像読み込み完了後にスライドサイズを調整
+            const images = document.querySelectorAll('.slide-image');
+            images.forEach(img => {
+                img.addEventListener('load', function() {
+                    swiper.update();
+                });
+            });
+        });
+        
+        // ============================================
+        // グローバルにAnalyticsを公開（デバッグ用）
+        // ============================================
+        window.Analytics = Analytics;
+        window.SwiperInstance = swiper;
+        
+        // コンソールで使用可能:
+        // Analytics.getEvents()
+        // Analytics.getEventsByType('cta_click')
+        // Analytics.getEventsByType('swipe')
+    </script>
+</body>
+</html>
