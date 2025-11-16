@@ -33,7 +33,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 100%);
+            background: linear-gradient(to right, #ffffff 0%, #cfdfff 100%);
             background-attachment: fixed;
             margin: 0;
             padding: 0;
@@ -46,7 +46,7 @@
             height: 100dvh;
             position: relative;
             overflow: hidden;
-            background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 100%);
+            background: linear-gradient(to right, #ffffff 0%, #cfdfff 100%);
         }
         
         .swiper-wrapper {
@@ -66,7 +66,7 @@
             position: relative;
             overflow: hidden;
             flex-shrink: 0;
-            background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 100%);
+            background: linear-gradient(to right, #ffffff 0%, #cfdfff 100%);
         }
         
         .slide-image {
@@ -171,7 +171,7 @@
         }
         
         .swiper-nav-arrow.prev {
-            top: 20px;
+            top: 0;
         }
         
         .swiper-nav-arrow.next {
@@ -186,13 +186,13 @@
             transform: translateX(-50%);
             z-index: 15;
             pointer-events: none;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(0, 0, 0, 0.5);
             font-size: 24px;
             animation: bounceGuide 2s ease-in-out infinite;
         }
         
         .swipe-guide.up {
-            top: 20px;
+            display: none;
         }
         
         .swipe-guide.down {
@@ -218,7 +218,7 @@
             left: 0;
             right: 0;
             z-index: 100;
-            background: linear-gradient(to top, rgba(10, 25, 41, 0.98) 0%, rgba(30, 58, 95, 0.95) 70%, transparent 100%);
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, rgba(207, 223, 255, 0.9) 70%, transparent 100%);
             padding: 20px 20px 30px;
             padding-bottom: max(30px, calc(30px + env(safe-area-inset-bottom)));
         }
@@ -230,7 +230,7 @@
         /* スワイプ誘導テキスト */
         .swipe-hint-text {
             text-align: center;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(0, 0, 0, 0.7);
             font-size: 13px;
             margin-bottom: 12px;
             font-weight: 500;
@@ -284,47 +284,6 @@
             animation: none;
         }
         
-        /* デバッグログ表示エリア（開発用） */
-        .debug-log {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            color: #0f0;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 11px;
-            font-family: monospace;
-            max-width: 300px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: none;
-        }
-        
-        .debug-log.active {
-            display: block;
-        }
-        
-        .debug-log-item {
-            margin-bottom: 5px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
-        }
-        
-        .debug-toggle {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            border: 1px solid #fff;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            z-index: 1001;
-            cursor: pointer;
-        }
         
         /* レスポンシブ調整 */
         @media (max-width: 480px) {
@@ -399,10 +358,6 @@
     </style>
 </head>
 <body>
-    <!-- デバッグログ -->
-    <div class="debug-log" id="debugLog"></div>
-    <button class="debug-toggle" id="debugToggle">ログON/OFF</button>
-    
     <!-- Swiper -->
     <div class="swiper-container" id="mainSwiper">
         <div class="swiper-wrapper">
@@ -415,56 +370,48 @@
             <!-- スライド2: Comparison -->
             <div class="swiper-slide" data-slide="2">
                 <img src="./images/02_comparison.jpg" alt="Comparison" class="slide-image">
-                <div class="swipe-guide up">↑</div>
                 <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド3: Before After -->
             <div class="swiper-slide" data-slide="3">
                 <img src="./images/03_before_after.jpg" alt="Before After" class="slide-image">
-                <div class="swipe-guide up">↑</div>
                 <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド4: Benefits -->
             <div class="swiper-slide" data-slide="4">
                 <img src="./images/04_benefits.jpg" alt="Benefits" class="slide-image">
-                <div class="swipe-guide up">↑</div>
                 <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド5: Anxiety -->
             <div class="swiper-slide" data-slide="5">
                 <img src="./images/05_anxiety.jpg" alt="Anxiety" class="slide-image">
-                <div class="swipe-guide up">↑</div>
                 <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド6: Testimonial C -->
             <div class="swiper-slide" data-slide="6">
                 <img src="./images/06_testimonial_c.jpg" alt="Testimonial C" class="slide-image">
-                <div class="swipe-guide up">↑</div>
                 <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド7: Testimonial A -->
             <div class="swiper-slide" data-slide="7">
                 <img src="./images/07_testimonial_a.jpg" alt="Testimonial A" class="slide-image">
-                <div class="swipe-guide up">↑</div>
                 <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド8: Testimonial B -->
             <div class="swiper-slide" data-slide="8">
                 <img src="./images/08_testimonial_b.jpg" alt="Testimonial B" class="slide-image">
-                <div class="swipe-guide up">↑</div>
                 <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド9: TradeLog Pro -->
             <div class="swiper-slide" data-slide="9">
                 <img src="./images/09_tradelog_pro.jpg" alt="TradeLog Pro" class="slide-image">
-                <div class="swipe-guide up">↑</div>
             </div>
         </div>
         
@@ -516,29 +463,12 @@
                     console.log(`[Analytics] ${type}:`, data);
                 }
                 
-                // デバッグログ表示
-                this.updateDebugLog(type, data);
+                // デバッグログ表示（削除済み）
                 
                 // ここで外部APIに送信することも可能
                 // this.sendToAPI(event);
             },
             
-            updateDebugLog: function(type, data) {
-                const logEl = document.getElementById('debugLog');
-                if (!logEl) return;
-                
-                const logItem = document.createElement('div');
-                logItem.className = 'debug-log-item';
-                const time = new Date().toLocaleTimeString();
-                logItem.textContent = `[${time}] ${type}: ${JSON.stringify(data)}`;
-                
-                logEl.insertBefore(logItem, logEl.firstChild);
-                
-                // 最大20件まで保持
-                while (logEl.children.length > 20) {
-                    logEl.removeChild(logEl.lastChild);
-                }
-            },
             
             // 外部API送信の例（必要に応じて実装）
             sendToAPI: function(event) {
@@ -744,21 +674,17 @@
                 if (index === swiper.activeIndex) {
                     // 最初のスライド
                     if (index === 0) {
-                        if (upGuide) upGuide.style.display = 'none';
                         if (downGuide) downGuide.style.display = 'block';
                     }
                     // 最後のスライド
                     else if (index === slides.length - 1) {
-                        if (upGuide) upGuide.style.display = 'block';
                         if (downGuide) downGuide.style.display = 'none';
                     }
                     // 中間のスライド
                     else {
-                        if (upGuide) upGuide.style.display = 'block';
                         if (downGuide) downGuide.style.display = 'block';
                     }
                 } else {
-                    if (upGuide) upGuide.style.display = 'none';
                     if (downGuide) downGuide.style.display = 'none';
                 }
             });
@@ -779,14 +705,6 @@
                 footerCta.classList.remove('hidden');
             }
         }
-        
-        // ============================================
-        // デバッグログの表示/非表示
-        // ============================================
-        document.getElementById('debugToggle').addEventListener('click', function() {
-            const logEl = document.getElementById('debugLog');
-            logEl.classList.toggle('active');
-        });
         
         // ============================================
         // ページネーションクリックイベント
