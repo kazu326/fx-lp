@@ -61,8 +61,8 @@
             height: 100dvh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            align-items: flex-start;
+            justify-content: flex-start;
             position: relative;
             overflow: hidden;
             flex-shrink: 0;
@@ -84,7 +84,9 @@
             pointer-events: none;
             flex-shrink: 0;
             margin: 0;
+            margin-top: 0;
             padding: 0;
+            padding-top: 0;
         }
         
         /* スライドごとのコンテンツエリア（削除済み - 画像のみ表示） */
@@ -179,37 +181,6 @@
             bottom: calc(180px + env(safe-area-inset-bottom));
         }
         
-        /* 誘導アイコン */
-        .swipe-guide {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 15;
-            pointer-events: none;
-            color: rgba(0, 0, 0, 0.5);
-            font-size: 24px;
-            animation: bounceGuide 2s ease-in-out infinite;
-        }
-        
-        .swipe-guide.up {
-            display: none;
-        }
-        
-        .swipe-guide.down {
-            bottom: 200px;
-            bottom: calc(200px + env(safe-area-inset-bottom));
-        }
-        
-        @keyframes bounceGuide {
-            0%, 100% {
-                opacity: 0.6;
-                transform: translateX(-50%) translateY(0);
-            }
-            50% {
-                opacity: 1;
-                transform: translateX(-50%) translateY(-8px);
-            }
-        }
         
         /* フッター固定CTA（常時表示） */
         .footer-cta {
@@ -219,8 +190,8 @@
             right: 0;
             z-index: 100;
             background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, rgba(207, 223, 255, 0.9) 70%, transparent 100%);
-            padding: 20px 20px 30px;
-            padding-bottom: max(30px, calc(30px + env(safe-area-inset-bottom)));
+            padding: 12px 20px 20px;
+            padding-bottom: max(20px, calc(20px + env(safe-area-inset-bottom)));
         }
         
         .footer-cta.hidden {
@@ -228,22 +199,26 @@
         }
         
         /* スワイプ誘導テキスト */
-        .swipe-hint-text {
+        .swipe-hint {
             text-align: center;
-            color: rgba(0, 0, 0, 0.7);
+            color: #ffffff;
             font-size: 13px;
             margin-bottom: 12px;
             font-weight: 500;
             letter-spacing: 0.5px;
-            animation: fadeInOut 2s ease-in-out infinite;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 25px;
+            display: none;
+            animation: bounceVertical 1.5s ease-in-out infinite;
         }
         
-        @keyframes fadeInOut {
+        @keyframes bounceVertical {
             0%, 100% {
-                opacity: 0.7;
+                transform: translateY(0);
             }
             50% {
-                opacity: 1;
+                transform: translateY(-10px);
             }
         }
         
@@ -313,13 +288,14 @@
             }
             
             .footer-cta {
-                padding: 18px 15px 25px;
-                padding-bottom: max(25px, calc(25px + env(safe-area-inset-bottom)));
+                padding: 12px 15px 18px;
+                padding-bottom: max(18px, calc(18px + env(safe-area-inset-bottom)));
             }
             
-            .swipe-hint-text {
+            .swipe-hint {
                 font-size: 12px;
                 margin-bottom: 10px;
+                padding: 6px 14px;
             }
             
             .line-button {
@@ -364,49 +340,41 @@
             <!-- スライド1: Hero -->
             <div class="swiper-slide" data-slide="1">
                 <img src="./images/01_hero.jpg" alt="Hero" class="slide-image">
-                <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド2: Comparison -->
             <div class="swiper-slide" data-slide="2">
                 <img src="./images/02_comparison.jpg" alt="Comparison" class="slide-image">
-                <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド3: Before After -->
             <div class="swiper-slide" data-slide="3">
                 <img src="./images/03_before_after.jpg" alt="Before After" class="slide-image">
-                <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド4: Benefits -->
             <div class="swiper-slide" data-slide="4">
                 <img src="./images/04_benefits.jpg" alt="Benefits" class="slide-image">
-                <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド5: Anxiety -->
             <div class="swiper-slide" data-slide="5">
                 <img src="./images/05_anxiety.jpg" alt="Anxiety" class="slide-image">
-                <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド6: Testimonial C -->
             <div class="swiper-slide" data-slide="6">
                 <img src="./images/06_testimonial_c.jpg" alt="Testimonial C" class="slide-image">
-                <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド7: Testimonial A -->
             <div class="swiper-slide" data-slide="7">
                 <img src="./images/07_testimonial_a.jpg" alt="Testimonial A" class="slide-image">
-                <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド8: Testimonial B -->
             <div class="swiper-slide" data-slide="8">
                 <img src="./images/08_testimonial_b.jpg" alt="Testimonial B" class="slide-image">
-                <div class="swipe-guide down">↓</div>
             </div>
             
             <!-- スライド9: TradeLog Pro -->
@@ -418,13 +386,8 @@
         <!-- ページネーション -->
         <div class="swiper-pagination"></div>
         
-        <!-- ナビゲーション矢印 -->
+        <!-- ナビゲーション矢印（1ページ目のみ表示） -->
         <div class="swiper-nav">
-            <div class="swiper-nav-arrow prev" id="prevArrow">
-                <svg viewBox="0 0 24 24">
-                    <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
-                </svg>
-            </div>
             <div class="swiper-nav-arrow next" id="nextArrow">
                 <svg viewBox="0 0 24 24">
                     <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
@@ -435,9 +398,9 @@
     
     <!-- フッター固定CTA（常時表示版） -->
     <div class="footer-cta" id="footerCta">
-        <div class="swipe-hint-text">↑ スワイプして続きを見る</div>
+        <div class="swipe-hint">↑ スワイプして続きを見る</div>
         <a href="https://line.me/ti/p/@your-line-id" class="line-button" id="lineButton" data-cta="footer-line">
-            LINEで友だち追加
+            無料で¥50,000分の特典を受け取る🎁
         </a>
     </div>
     
@@ -538,11 +501,18 @@
                 timestamp: Date.now()
             });
             
-            // ナビゲーション矢印の更新
-            updateNavArrows();
+            // スワイプ誘導の表示/非表示（1ページ目のみ表示）
+            const hint = document.querySelector('.swipe-hint');
+            if (hint) {
+                if (slideIndex === 0) {
+                    hint.style.display = 'block';
+                } else {
+                    hint.style.display = 'none';
+                }
+            }
             
-            // 誘導アイコンの表示/非表示
-            updateSwipeGuides();
+            // ナビゲーション矢印の更新（1ページ目のみ表示）
+            updateNavArrows();
             
             // 固定CTAの表示制御（オプション）
             // toggleFooterCta(slideIndex);
@@ -618,80 +588,36 @@
         }
         
         // ============================================
-        // ナビゲーション矢印
+        // ナビゲーション矢印（1ページ目のみ表示）
         // ============================================
-        const prevArrow = document.getElementById('prevArrow');
         const nextArrow = document.getElementById('nextArrow');
         
-        prevArrow.addEventListener('click', function() {
-            if (!this.classList.contains('disabled')) {
-                Analytics.log('nav_click', {
-                    direction: 'prev',
-                    fromIndex: swiper.activeIndex,
-                    timestamp: Date.now()
-                });
-                swiper.slidePrev();
-            }
-        });
-        
-        nextArrow.addEventListener('click', function() {
-            if (!this.classList.contains('disabled')) {
-                Analytics.log('nav_click', {
-                    direction: 'next',
-                    fromIndex: swiper.activeIndex,
-                    timestamp: Date.now()
-                });
-                swiper.slideNext();
-            }
-        });
+        if (nextArrow) {
+            nextArrow.addEventListener('click', function() {
+                if (!this.classList.contains('disabled')) {
+                    Analytics.log('nav_click', {
+                        direction: 'next',
+                        fromIndex: swiper.activeIndex,
+                        timestamp: Date.now()
+                    });
+                    swiper.slideNext();
+                }
+            });
+        }
         
         function updateNavArrows() {
-            if (swiper.isBeginning) {
-                prevArrow.classList.add('disabled');
-            } else {
-                prevArrow.classList.remove('disabled');
-            }
-            
-            if (swiper.isEnd) {
-                nextArrow.classList.add('disabled');
-            } else {
-                nextArrow.classList.remove('disabled');
+            // 1ページ目（index=0）のみ矢印を表示、それ以外は非表示
+            if (nextArrow) {
+                if (swiper.activeIndex === 0) {
+                    nextArrow.style.display = 'flex';
+                } else {
+                    nextArrow.style.display = 'none';
+                }
             }
         }
         
         // 初期状態の更新
         updateNavArrows();
-        
-        // ============================================
-        // 誘導アイコンの表示制御
-        // ============================================
-        function updateSwipeGuides() {
-            const slides = document.querySelectorAll('.swiper-slide');
-            slides.forEach((slide, index) => {
-                const upGuide = slide.querySelector('.swipe-guide.up');
-                const downGuide = slide.querySelector('.swipe-guide.down');
-                
-                if (index === swiper.activeIndex) {
-                    // 最初のスライド
-                    if (index === 0) {
-                        if (downGuide) downGuide.style.display = 'block';
-                    }
-                    // 最後のスライド
-                    else if (index === slides.length - 1) {
-                        if (downGuide) downGuide.style.display = 'none';
-                    }
-                    // 中間のスライド
-                    else {
-                        if (downGuide) downGuide.style.display = 'block';
-                    }
-                } else {
-                    if (downGuide) downGuide.style.display = 'none';
-                }
-            });
-        }
-        
-        // 初期状態の更新
-        updateSwipeGuides();
         
         // ============================================
         // 固定CTAの表示制御（オプション機能）
@@ -744,6 +670,12 @@
                 totalSlides: swiper.slides.length,
                 timestamp: Date.now()
             });
+            
+            // 初期状態でスワイプ誘導を表示（1ページ目の場合）
+            const hint = document.querySelector('.swipe-hint');
+            if (hint && swiper.activeIndex === 0) {
+                hint.style.display = 'block';
+            }
             
             // 画像読み込み完了後にスライドサイズを調整
             const images = document.querySelectorAll('.slide-image');
