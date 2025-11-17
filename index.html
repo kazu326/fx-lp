@@ -552,8 +552,6 @@
         // ============================================
         document.querySelectorAll('[data-cta]').forEach(button => {
             button.addEventListener('click', function(e) {
-                e.preventDefault();
-                
                 const ctaId = this.getAttribute('data-cta');
                 const slideIndex = swiper.activeIndex;
                 const slideEl = swiper.slides[slideIndex];
@@ -570,25 +568,10 @@
                     timestamp: Date.now()
                 });
                 
-                // 実際の遷移処理（LINE URLなど）
-                handleCtaClick(ctaId, this);
+                // デフォルトのリンク動作を許可（Analyticsログ記録後）
+                // e.preventDefault()を削除して、通常のリンク遷移を許可
             });
         });
-        
-        // CTAクリック処理
-        function handleCtaClick(ctaId, buttonEl) {
-            // LINEボタンの場合
-            if (ctaId.includes('line') || buttonEl.classList.contains('line-button')) {
-                const lineUrl = buttonEl.getAttribute('href') || 'https://line.me/R/ti/p/@670ndecw';
-                // window.open(lineUrl, '_blank');
-                // または
-                // window.location.href = lineUrl;
-                console.log('LINE登録:', lineUrl);
-            } else {
-                // その他のCTA処理
-                console.log('CTA clicked:', ctaId);
-            }
-        }
         
         // ============================================
         // ナビゲーション矢印（1ページ目のみ表示）
