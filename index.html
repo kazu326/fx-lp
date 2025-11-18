@@ -341,47 +341,47 @@
     <div class="swiper-container" id="mainSwiper">
         <div class="swiper-wrapper">
             <!-- スライド1: Hero -->
-            <div class="swiper-slide" data-slide="1">
+            <div class="swiper-slide" data-slide="Hero" data-slide-number="1">
                 <img src="./images/01_hero.jpg" alt="Hero" class="slide-image">
             </div>
             
             <!-- スライド2: Comparison -->
-            <div class="swiper-slide" data-slide="2">
+            <div class="swiper-slide" data-slide="Comparison" data-slide-number="2">
                 <img src="./images/02_comparison.jpg" alt="Comparison" class="slide-image">
             </div>
             
             <!-- スライド3: Before After -->
-            <div class="swiper-slide" data-slide="3">
+            <div class="swiper-slide" data-slide="BeforeAfter" data-slide-number="3">
                 <img src="./images/03_before_after.jpg" alt="Before After" class="slide-image">
             </div>
             
             <!-- スライド4: Benefits -->
-            <div class="swiper-slide" data-slide="4">
+            <div class="swiper-slide" data-slide="Benefits" data-slide-number="4">
                 <img src="./images/04_benefits.jpg" alt="Benefits" class="slide-image">
             </div>
             
             <!-- スライド5: Anxiety -->
-            <div class="swiper-slide" data-slide="5">
+            <div class="swiper-slide" data-slide="Anxiety" data-slide-number="5">
                 <img src="./images/05_anxiety.jpg" alt="Anxiety" class="slide-image">
             </div>
             
             <!-- スライド6: Testimonial C -->
-            <div class="swiper-slide" data-slide="6">
+            <div class="swiper-slide" data-slide="TestimonialC" data-slide-number="6">
                 <img src="./images/06_testimonial_c.jpg" alt="Testimonial C" class="slide-image">
             </div>
             
             <!-- スライド7: Testimonial A -->
-            <div class="swiper-slide" data-slide="7">
+            <div class="swiper-slide" data-slide="TestimonialA" data-slide-number="7">
                 <img src="./images/07_testimonial_a.jpg" alt="Testimonial A" class="slide-image">
             </div>
             
             <!-- スライド8: Testimonial B -->
-            <div class="swiper-slide" data-slide="8">
+            <div class="swiper-slide" data-slide="TestimonialB" data-slide-number="8">
                 <img src="./images/08_testimonial_b.jpg" alt="Testimonial B" class="slide-image">
             </div>
             
             <!-- スライド9: TradeLog Pro -->
-            <div class="swiper-slide" data-slide="9">
+            <div class="swiper-slide" data-slide="TradeLogPro" data-slide-number="9">
                 <img src="./images/09_tradelog_pro.jpg" alt="TradeLog Pro" class="slide-image">
             </div>
         </div>
@@ -495,10 +495,12 @@
         swiper.on('slideChange', function() {
             const slideIndex = swiper.activeIndex;
             const slideEl = swiper.slides[slideIndex];
-            const slideNumber = slideEl.getAttribute('data-slide');
+            const slideName = slideEl.getAttribute('data-slide');
+            const slideNumber = slideEl.getAttribute('data-slide-number');
             
             Analytics.log('swipe', {
                 slideIndex: slideIndex,
+                slideName: slideName,
                 slideNumber: slideNumber,
                 direction: 'changed',
                 timestamp: Date.now()
@@ -555,13 +557,15 @@
                 const ctaId = this.getAttribute('data-cta');
                 const slideIndex = swiper.activeIndex;
                 const slideEl = swiper.slides[slideIndex];
-                const slideNumber = slideEl.getAttribute('data-slide');
+                const slideName = slideEl.getAttribute('data-slide');
+                const slideNumber = slideEl.getAttribute('data-slide-number');
                 const buttonType = this.classList.contains('line-button') ? 'footer' : 'slide';
                 const buttonText = this.textContent.trim();
                 
                 Analytics.log('cta_click', {
                     ctaId: ctaId,
                     slideIndex: slideIndex,
+                    slideName: slideName,
                     slideNumber: slideNumber,
                     buttonType: buttonType,
                     buttonText: buttonText,
@@ -649,6 +653,67 @@
         });
         
         // ============================================
+        // Wicleアナリティクス用スライド閲覧トラッキング
+        // ============================================
+        const viewedSlides = new Set(); // 重複防止用
+        
+        function trackSlideView(slideEl) {
+            const slideName = slideEl.getAttribute('data-slide');
+            const slideNumber = slideEl.getAttribute('data-slide-number');
+            const slideId = slideName + '_' + slideNumber;
+            
+            // 既に送信済みの場合はスキップ
+            if (viewedSlides.has(slideId)) {
+                return;
+            }
+            
+            // 送信済みとしてマーク
+            viewedSlides.add(slideId);
+            
+            // Wicleにイベント送信
+            if (typeof wicle === 'function') {
+                try {
+                    wicle('event', 'slide_view', {
+                        slide_name: slideName,
+                        slide_number: parseInt(slideNumber, 10)
+                    });
+                } catch (e) {
+                    console.warn('Wicle event send failed:', e);
+                }
+            }
+            
+            // Analyticsにも記録
+            Analytics.log('slide_view', {
+                slideName: slideName,
+                slideNumber: parseInt(slideNumber, 10),
+                timestamp: Date.now()
+            });
+        }
+        
+        // Intersection Observer APIの設定
+        const slideObserverOptions = {
+            root: null, // ビューポートを基準
+            rootMargin: '0px',
+            threshold: 0.5 // 50%以上表示されたら発火
+        };
+        
+        const slideObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+                    trackSlideView(entry.target);
+                }
+            });
+        }, slideObserverOptions);
+        
+        // 各スライドを監視対象に追加
+        function initSlideTracking() {
+            const slides = document.querySelectorAll('.swiper-slide');
+            slides.forEach(slide => {
+                slideObserver.observe(slide);
+            });
+        }
+        
+        // ============================================
         // 初期化完了ログ
         // ============================================
         window.addEventListener('load', function() {
@@ -656,6 +721,9 @@
                 totalSlides: swiper.slides.length,
                 timestamp: Date.now()
             });
+            
+            // スライドトラッキングを初期化
+            initSlideTracking();
             
             // 初期状態でスワイプ誘導を表示（1ページ目の場合）
             const hint = document.querySelector('.swipe-hint');
