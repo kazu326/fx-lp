@@ -4,6 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>【先着50名限定】無料で5万円特典＋初心者も稼ぐスマホFXサロン</title>
+    
+    <!-- 内部トラフィック除外スクリプト -->
+    <script>
+    (function() {
+      // URLパラメータをチェック
+      const params = new URLSearchParams(window.location.search);
+      
+      // ?internal=1 でアクセス時、内部ユーザーとして登録
+      if (params.get('internal') === '1') {
+        localStorage.setItem('wicle_internal_user', 'true');
+        console.log('✅ 内部ユーザーとして登録されました');
+      }
+      
+      // ?internal=0 で内部ユーザー設定を解除（テスト用）
+      if (params.get('internal') === '0') {
+        localStorage.removeItem('wicle_internal_user');
+        console.log('✅ 内部ユーザー設定を解除しました');
+      }
+      
+      // 内部ユーザーの場合、Wicle計測を無効化
+      if (localStorage.getItem('wicle_internal_user') === 'true') {
+        console.log('🚫 内部ユーザー: Wicle計測を無効化');
+        
+        // Wicleのイベント送信を無効化
+        window.wicle = function() {
+          console.log('🚫 Wicle event blocked (internal):', arguments[0], arguments[1]);
+        };
+        
+        // KARTEタグの実行を防ぐ
+        window.KARTE_DISABLED = true;
+      }
+    })();
+    </script>
+    
     <!-- Start KARTE Tag -->
     <script>!function(n){if(!window[n]){var o=window[n]=function(){var n=[].slice.call(arguments);return o.x?o.x.apply(0,n):o.q.push(n)};o.q=[],o.i=Date.now(),o.allow=function(){o.o="allow"},o.deny=function(){o.o="deny"}}}("krt")</script>
     <script async src="https://cdn-edge.karte.io/d29182c7d5ead1f33c38585822e2009c/edge.js"></script>
@@ -670,8 +704,11 @@
             // 送信済みとしてマーク
             viewedSlides.add(slideId);
             
-            // Wicleにイベント送信
-            if (typeof wicle === 'function') {
+            // 内部ユーザーチェック
+            const isInternalUser = localStorage.getItem('wicle_internal_user') === 'true';
+            
+            // Wicleにイベント送信（内部ユーザーでない場合のみ）
+            if (!isInternalUser && typeof wicle === 'function') {
                 try {
                     wicle('event', 'slide_view', {
                         slide_name: slideName,
@@ -680,12 +717,15 @@
                 } catch (e) {
                     console.warn('Wicle event send failed:', e);
                 }
+            } else if (isInternalUser) {
+                console.log('🚫 Wicle slide_view event blocked (internal user):', slideName);
             }
             
-            // Analyticsにも記録
+            // Analyticsにも記録（内部ユーザーでも記録）
             Analytics.log('slide_view', {
                 slideName: slideName,
                 slideNumber: parseInt(slideNumber, 10),
+                isInternalUser: isInternalUser,
                 timestamp: Date.now()
             });
         }
