@@ -524,6 +524,25 @@
         });
         
         // ============================================
+        // ページタイトル更新（Wicleアナリティクス用）
+        // ============================================
+        function updatePageTitle(slideIndex) {
+            const titles = [
+                '【先着50名限定】FXサロン | トップ',           // スライド1: Hero
+                '【先着50名限定】FXサロン | 3つの約束',         // スライド2: Comparison
+                '【先着50名限定】FXサロン | LINE登録特典',      // スライド3: BeforeAfter
+                '【先着50名限定】FXサロン | 特典詳細',          // スライド4: Benefits
+                '【先着50名限定】FXサロン | 無料相談',          // スライド5: Anxiety
+                '【先着50名限定】FXサロン | お客様の声1',       // スライド6: TestimonialC
+                '【先着50名限定】FXサロン | お客様の声2',       // スライド7: TestimonialA
+                '【先着50名限定】FXサロン | お客様の声3',       // スライド8: TestimonialB
+                '【先着50名限定】FXサロン | 登録フォーム'        // スライド9: TradeLogPro
+            ];
+            
+            document.title = titles[slideIndex] || titles[0];
+        }
+        
+        // ============================================
         // スワイプイベント解析
         // ============================================
         swiper.on('slideChange', function() {
@@ -539,6 +558,9 @@
                 direction: 'changed',
                 timestamp: Date.now()
             });
+            
+            // ページタイトルを更新（Wicleアナリティクス用）
+            updatePageTitle(slideIndex);
             
             // スワイプ誘導の表示/非表示（1ページ目のみ表示）
             const hint = document.querySelector('.swipe-hint');
@@ -761,6 +783,9 @@
                 totalSlides: swiper.slides.length,
                 timestamp: Date.now()
             });
+            
+            // 初期ページタイトルを設定
+            updatePageTitle(swiper.activeIndex);
             
             // スライドトラッキングを初期化
             initSlideTracking();
