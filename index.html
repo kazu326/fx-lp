@@ -389,9 +389,9 @@
             padding: 20px;
             z-index: 10;
             position: absolute;
-            top: 50%;
+            top: 150px;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             transition: opacity 1s ease;
         }
         
@@ -461,6 +461,7 @@
             .typewriter-container {
                 max-width: 95%;
                 padding: 15px;
+                top: 120px; /* スマホではさらに上に */
             }
             
             .typewriter-text {
@@ -711,22 +712,21 @@
                     cursor.style.marginLeft = '2px';
                     target.appendChild(cursor);
                     
-                    // カーソル点滅を少し見せた後、テキストをフェードアウト
-                    // 同時に画像をフェードイン（タイムラグなし）
+                    // 画像を先にフェードイン開始（0.3秒後）
                     setTimeout(() => {
-                        const typewriterContainer = target.closest('.typewriter-container');
                         const imageContainer = document.getElementById('futureImageContainer');
-                        
-                        // テキストをフェードアウト
-                        if (typewriterContainer) {
-                            typewriterContainer.classList.add('fade-out');
-                        }
-                        
-                        // 同時に画像をフェードイン（タイムラグなし）
                         if (imageContainer) {
                             imageContainer.classList.add('visible');
                         }
-                    }, 1500); // カーソル点滅を1.5秒見せる
+                    }, 300); // 完了後0.3秒後に画像フェードイン開始
+                    
+                    // テキストをフェードアウト（0.5秒後、画像フェードインと被らせる）
+                    setTimeout(() => {
+                        const typewriterContainer = target.closest('.typewriter-container');
+                        if (typewriterContainer) {
+                            typewriterContainer.classList.add('fade-out');
+                        }
+                    }, 500); // 完了後0.5秒後にテキストフェードアウト開始（余韻を残す）
                     
                     typewriterCompleted = true;
                     
@@ -782,8 +782,8 @@
                 questionText,
                 typewriterText,
                 '|',
-                60,  // 1文字60ms
-                1000, // カーソル1秒ごと点滅
+                40,  // 1文字40ms（1.5倍速）
+                800, // カーソル0.8秒ごと点滅（ティックトック向けに調整）
                 function() {
                     Analytics.log('typewriter_complete', {
                         slideName: 'Future',
