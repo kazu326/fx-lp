@@ -368,6 +368,102 @@
                 transform: translateZ(0);
             }
         }
+        
+        /* ============================================
+         * Futureスライド: タイプライターアニメーション
+         * ============================================ */
+        .future-slide {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .typewriter-container {
+            width: 100%;
+            max-width: 90%;
+            margin: 0 auto;
+            padding: 20px;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .typewriter-text {
+            font-size: 18px;
+            line-height: 1.8;
+            color: rgba(0, 0, 0, 0.85);
+            font-weight: 500;
+            text-align: center;
+            min-height: 80px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        /* カーソル点滅アニメーション */
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+        
+        .typewriter-cursor {
+            display: inline-block;
+            margin-left: 2px;
+            animation: blink 1s step-end infinite;
+            font-weight: bold;
+        }
+        
+        /* 画像コンテナ（初期状態：非表示） */
+        .future-image-container {
+            width: 100%;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+            margin-top: 20px;
+            z-index: 5;
+            position: relative;
+        }
+        
+        .future-image-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .future-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* レスポンシブ調整（Futureスライド） */
+        @media (max-width: 480px) {
+            .typewriter-container {
+                max-width: 95%;
+                padding: 15px;
+            }
+            
+            .typewriter-text {
+                font-size: 16px;
+                line-height: 1.7;
+                min-height: 70px;
+            }
+            
+            .future-image-container {
+                margin-top: 15px;
+            }
+        }
+        
+        /* アニメーション無効化用（必要に応じて） */
+        /* .no-animation .typewriter-text,
+        .no-animation .future-image-container {
+            animation: none !important;
+            transition: none !important;
+        } */
     </style>
 </head>
 <body>
@@ -380,8 +476,15 @@
             </div>
             
             <!-- スライド1-2: Future -->
-            <div class="swiper-slide" data-slide="Future" data-slide-number="1-2">
-                <img src="./images/01-2-future-sp_vA.jpg" alt="Future" class="slide-image">
+            <div class="swiper-slide future-slide" data-slide="Future" data-slide-number="1-2">
+                <!-- タイプライター用テキスト要素 -->
+                <div class="typewriter-container">
+                    <div id="typewriterText" class="typewriter-text"></div>
+                </div>
+                <!-- 画像コンテナ（初期状態は非表示） -->
+                <div class="future-image-container" id="futureImageContainer">
+                    <img src="./images/01-2-future-sp_vA.jpg" alt="Future" class="slide-image future-image">
+                </div>
             </div>
             
             <!-- スライド2: Comparison -->
@@ -549,6 +652,122 @@
         }
         
         // ============================================
+        // Futureスライド: タイプライターアニメーション
+        // ============================================
+        let typewriterInterval = null;
+        let typewriterCompleted = false;
+        
+        /**
+         * タイプライター風にテキストを1文字ずつ表示し、最後にカーソルを点滅させる
+         * @param {string} text - 表示するテキスト（\nで改行可能）
+         * @param {HTMLElement} target - テキストを表示する要素
+         * @param {string} cursorChar - カーソル文字（デフォルト: '|'）
+         * @param {number} speed - 1文字あたりの表示速度（ミリ秒、デフォルト: 60）
+         * @param {number} blinkSpeed - カーソル点滅の周期（ミリ秒、デフォルト: 1000）
+         * @param {Function} onEnd - タイプライター完了時のコールバック
+         */
+        function typewriterWithCursor(text, target, cursorChar = '|', speed = 60, blinkSpeed = 1000, onEnd) {
+            // 既存のタイマーをクリア
+            if (typewriterInterval) {
+                clearInterval(typewriterInterval);
+                typewriterInterval = null;
+            }
+            
+            // テキストをクリア
+            target.textContent = '';
+            
+            let i = 0;
+            typewriterInterval = setInterval(() => {
+                if (i < text.length) {
+                    if (text[i] === '\n') {
+                        // 改行処理
+                        target.innerHTML += '<br>';
+                    } else {
+                        target.textContent += text[i];
+                    }
+                    i++;
+                } else {
+                    // タイプライター完了
+                    clearInterval(typewriterInterval);
+                    typewriterInterval = null;
+                    
+                    // カーソルを追加して点滅
+                    const cursor = document.createElement('span');
+                    cursor.textContent = cursorChar;
+                    cursor.className = 'typewriter-cursor';
+                    cursor.style.animation = `blink ${blinkSpeed/1000}s step-end infinite`;
+                    cursor.style.marginLeft = '2px';
+                    target.appendChild(cursor);
+                    
+                    // 画像フェードイン（0.5秒ディレイ）
+                    setTimeout(() => {
+                        const imageContainer = document.getElementById('futureImageContainer');
+                        if (imageContainer) {
+                            imageContainer.classList.add('visible');
+                        }
+                    }, 500);
+                    
+                    typewriterCompleted = true;
+                    
+                    if (onEnd) {
+                        onEnd();
+                    }
+                }
+            }, speed);
+        }
+        
+        /**
+         * Futureスライドのアニメーションをリセット
+         */
+        function resetFutureSlideAnimation() {
+            // タイプライターをリセット
+            if (typewriterInterval) {
+                clearInterval(typewriterInterval);
+                typewriterInterval = null;
+            }
+            
+            const typewriterText = document.getElementById('typewriterText');
+            const imageContainer = document.getElementById('futureImageContainer');
+            
+            if (typewriterText) {
+                typewriterText.textContent = '';
+            }
+            
+            if (imageContainer) {
+                imageContainer.classList.remove('visible');
+            }
+            
+            typewriterCompleted = false;
+        }
+        
+        /**
+         * Futureスライドのアニメーションを開始
+         */
+        function startFutureSlideAnimation() {
+            const typewriterText = document.getElementById('typewriterText');
+            if (!typewriterText) return;
+            
+            // アニメーションをリセット
+            resetFutureSlideAnimation();
+            
+            // タイプライターアニメーション開始
+            const questionText = 'もし…毎月5万円の副収入が入ったら…\nあなたなら何に使いますか？';
+            typewriterWithCursor(
+                questionText,
+                typewriterText,
+                '|',
+                60,  // 1文字60ms
+                1000, // カーソル1秒ごと点滅
+                function() {
+                    Analytics.log('typewriter_complete', {
+                        slideName: 'Future',
+                        timestamp: Date.now()
+                    });
+                }
+            );
+        }
+        
+        // ============================================
         // スワイプイベント解析
         // ============================================
         swiper.on('slideChange', function() {
@@ -593,10 +812,25 @@
         });
         
         swiper.on('slideChangeTransitionEnd', function() {
+            const slideIndex = swiper.activeIndex;
+            const slideEl = swiper.slides[slideIndex];
+            const slideName = slideEl.getAttribute('data-slide');
+            
             Analytics.log('swipe_end', {
-                slideIndex: swiper.activeIndex,
+                slideIndex: slideIndex,
                 timestamp: Date.now()
             });
+            
+            // Futureスライドが表示されたらタイプライターアニメーションを開始
+            if (slideName === 'Future') {
+                // 少しディレイを入れてからアニメーション開始（スムーズな表示のため）
+                setTimeout(() => {
+                    startFutureSlideAnimation();
+                }, 100);
+            } else {
+                // 他のスライドに移動したらアニメーションをリセット
+                resetFutureSlideAnimation();
+            }
         });
         
         swiper.on('touchStart', function() {
@@ -802,6 +1036,14 @@
             const hint = document.querySelector('.swipe-hint');
             if (hint && swiper.activeIndex === 0) {
                 hint.style.display = 'block';
+            }
+            
+            // 初期表示がFutureスライドの場合、アニメーションを開始
+            const initialSlide = swiper.slides[swiper.activeIndex];
+            if (initialSlide && initialSlide.getAttribute('data-slide') === 'Future') {
+                setTimeout(() => {
+                    startFutureSlideAnimation();
+                }, 300);
             }
             
             // 画像読み込み完了後にスライドサイズを調整
