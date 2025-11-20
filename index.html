@@ -375,10 +375,11 @@
         .future-slide {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding: 0;
             text-align: center;
+            position: relative;
         }
         
         .typewriter-container {
@@ -387,7 +388,15 @@
             margin: 0 auto;
             padding: 20px;
             z-index: 10;
-            position: relative;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: opacity 1s ease;
+        }
+        
+        .typewriter-container.fade-out {
+            opacity: 0;
         }
         
         .typewriter-text {
@@ -418,15 +427,18 @@
             font-weight: bold;
         }
         
-        /* 画像コンテナ（初期状態：非表示） */
+        /* 画像コンテナ（初期状態：非表示、上部にピッタリ） */
         .future-image-container {
             width: 100%;
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
             transition: opacity 1s ease, transform 1s ease;
-            margin-top: 20px;
+            margin: 0;
+            padding: 0;
             z-index: 5;
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
         
         .future-image-container.visible {
@@ -436,8 +448,12 @@
         
         .future-image {
             width: 100%;
+            width: 100vw;
             height: auto;
             display: block;
+            margin: 0;
+            padding: 0;
+            object-fit: contain;
         }
         
         /* レスポンシブ調整（Futureスライド） */
@@ -451,10 +467,6 @@
                 font-size: 16px;
                 line-height: 1.7;
                 min-height: 70px;
-            }
-            
-            .future-image-container {
-                margin-top: 15px;
             }
         }
         
@@ -699,13 +711,22 @@
                     cursor.style.marginLeft = '2px';
                     target.appendChild(cursor);
                     
-                    // 画像フェードイン（0.5秒ディレイ）
+                    // カーソル点滅を少し見せた後、テキストをフェードアウト
+                    // 同時に画像をフェードイン（タイムラグなし）
                     setTimeout(() => {
+                        const typewriterContainer = target.closest('.typewriter-container');
                         const imageContainer = document.getElementById('futureImageContainer');
+                        
+                        // テキストをフェードアウト
+                        if (typewriterContainer) {
+                            typewriterContainer.classList.add('fade-out');
+                        }
+                        
+                        // 同時に画像をフェードイン（タイムラグなし）
                         if (imageContainer) {
                             imageContainer.classList.add('visible');
                         }
-                    }, 500);
+                    }, 1500); // カーソル点滅を1.5秒見せる
                     
                     typewriterCompleted = true;
                     
@@ -727,10 +748,15 @@
             }
             
             const typewriterText = document.getElementById('typewriterText');
+            const typewriterContainer = document.querySelector('.typewriter-container');
             const imageContainer = document.getElementById('futureImageContainer');
             
             if (typewriterText) {
                 typewriterText.textContent = '';
+            }
+            
+            if (typewriterContainer) {
+                typewriterContainer.classList.remove('fade-out');
             }
             
             if (imageContainer) {
@@ -751,7 +777,7 @@
             resetFutureSlideAnimation();
             
             // タイプライターアニメーション開始
-            const questionText = 'もし…毎月5万円の副収入が入ったら…\nあなたなら何に使いますか？';
+            const questionText = 'もし...毎月５万円の副収入が入ったら...あなたなら\n何に使いますか？';
             typewriterWithCursor(
                 questionText,
                 typewriterText,
