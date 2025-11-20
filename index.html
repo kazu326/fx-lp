@@ -379,6 +379,11 @@
                 <img src="./images/01_hero.jpg" alt="Hero" class="slide-image">
             </div>
             
+            <!-- スライド1-2: Future -->
+            <div class="swiper-slide" data-slide="Future" data-slide-number="1-2">
+                <img src="./images/01-2-future-sp_vA.jpg" alt="Future" class="slide-image">
+            </div>
+            
             <!-- スライド2: Comparison -->
             <div class="swiper-slide" data-slide="Comparison" data-slide-number="2">
                 <img src="./images/02_comparison.jpg" alt="Comparison" class="slide-image">
@@ -529,14 +534,15 @@
         function updatePageTitle(slideIndex) {
             const titles = [
                 '【先着50名限定】FXサロン | トップ',           // スライド1: Hero
-                '【先着50名限定】FXサロン | 3つの約束',         // スライド2: Comparison
-                '【先着50名限定】FXサロン | LINE登録特典',      // スライド3: BeforeAfter
-                '【先着50名限定】FXサロン | 特典詳細',          // スライド4: Benefits
-                '【先着50名限定】FXサロン | 無料相談',          // スライド5: Anxiety
-                '【先着50名限定】FXサロン | お客様の声1',       // スライド6: TestimonialC
-                '【先着50名限定】FXサロン | お客様の声2',       // スライド7: TestimonialA
-                '【先着50名限定】FXサロン | お客様の声3',       // スライド8: TestimonialB
-                '【先着50名限定】FXサロン | 登録フォーム'        // スライド9: TradeLogPro
+                '【先着50名限定】FXサロン | 未来',             // スライド2: Future
+                '【先着50名限定】FXサロン | 3つの約束',         // スライド3: Comparison
+                '【先着50名限定】FXサロン | LINE登録特典',      // スライド4: BeforeAfter
+                '【先着50名限定】FXサロン | 特典詳細',          // スライド5: Benefits
+                '【先着50名限定】FXサロン | 無料相談',          // スライド6: Anxiety
+                '【先着50名限定】FXサロン | お客様の声1',       // スライド7: TestimonialC
+                '【先着50名限定】FXサロン | お客様の声2',       // スライド8: TestimonialA
+                '【先着50名限定】FXサロン | お客様の声3',       // スライド9: TestimonialB
+                '【先着50名限定】FXサロン | 登録フォーム'        // スライド10: TradeLogPro
             ];
             
             document.title = titles[slideIndex] || titles[0];
@@ -732,9 +738,11 @@
             // Wicleにイベント送信（内部ユーザーでない場合のみ）
             if (!isInternalUser && typeof wicle === 'function') {
                 try {
+                    // slide_numberが数値として解析可能な場合は数値、そうでない場合は文字列として送信
+                    const slideNum = isNaN(parseInt(slideNumber, 10)) ? slideNumber : parseInt(slideNumber, 10);
                     wicle('event', 'slide_view', {
                         slide_name: slideName,
-                        slide_number: parseInt(slideNumber, 10)
+                        slide_number: slideNum
                     });
                 } catch (e) {
                     console.warn('Wicle event send failed:', e);
@@ -746,7 +754,7 @@
             // Analyticsにも記録（内部ユーザーでも記録）
             Analytics.log('slide_view', {
                 slideName: slideName,
-                slideNumber: parseInt(slideNumber, 10),
+                slideNumber: slideNumber, // 文字列のまま記録
                 isInternalUser: isInternalUser,
                 timestamp: Date.now()
             });
